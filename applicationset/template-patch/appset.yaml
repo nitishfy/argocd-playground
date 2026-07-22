@@ -1,0 +1,48 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: template-patch-demo
+  namespace: argocd
+spec:
+  # templatePatch only works when Go templating is enabled
+  goTemplate: true
+  goTemplateOptions:
+    - missingkey=error
+  generators:
+    - list:
+        elements:
+          - name: dev
+            env: dev
+            autoSync: false
+          - name: prod
+            env: prod
+            autoSync: true
+  template:
+    metadata:
+      name: 'guestbook-{{ .name }}'
+      annotations:
+        playground.argoproj.io/env: '{{ .env }}'
+    spec:
+      project: default
+      source:
+        repoURL: https://github.com/nitishfy/argocd-playground.git
+        targetRevision: HEAD
+        path: applicationset/template-patch/apps/guestbook
+        helm:
+          valueFiles:
+            - values.yaml
+            - '{{ .env }}/values.yaml'
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: 'guestbook-{{ .env }}'
+      syncPolicy:
+        syncOptions:
+          - CreateNamespace=true
+  templatePatch: |
+    {{- if .autoSync }}
+    spec:
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+    {{- end }}
