@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: stuck
+spec:
+  accessModes: ["ReadWriteOnce"]
+  storageClassName: does-not-exist   # never binds -> permanently Pending
+  resources:
+    requests:
+      storage: 1Gi
