@@ -1,0 +1,75 @@
+# Argo CD 3.5 - Application Notice demo
+#
+#   kubectl apply -f demo.yaml
+#
+# Three guestbook apps, three different notice configs, so the list view
+# shows three different icons side by side.
+
+# 1) info + link. Dismissible. Banner and icon.
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: notice-info
+  namespace: argocd
+  annotations:
+    notice.argocd.argoproj.io/content: "Scheduled DB maintenance on 2026-09-01 02:00 UTC"
+    notice.argocd.argoproj.io/url: "https://status.example.com/maintenance"
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/argoproj/argocd-example-apps.git
+    targetRevision: HEAD
+    path: guestbook
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: notice-info
+  syncPolicy:
+    automated: {prune: true, selfHeal: true}
+    syncOptions: [CreateNamespace=true]
+---
+# 2) warning + permanent. No dismiss control.
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: notice-warning
+  namespace: argocd
+  annotations:
+    notice.argocd.argoproj.io/content: "Deprecated - migrate to v2 by 2026-10-01"
+    notice.argocd.argoproj.io/severity: "warning"
+    notice.argocd.argoproj.io/url: "https://wiki.example.com/v2-migration"
+    notice.argocd.argoproj.io/permanent: "true"
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/argoproj/argocd-example-apps.git
+    targetRevision: HEAD
+    path: guestbook
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: notice-warning
+  syncPolicy:
+    automated: {prune: true, selfHeal: true}
+    syncOptions: [CreateNamespace=true]
+---
+# 3) icon-only ownership hint. No banner on the details page.
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: notice-icon-only
+  namespace: argocd
+  annotations:
+    notice.argocd.argoproj.io/content: "Owned by team-payments"
+    notice.argocd.argoproj.io/scope: "icon"
+    notice.argocd.argoproj.io/icon: "fa-life-ring"
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/argoproj/argocd-example-apps.git
+    targetRevision: HEAD
+    path: guestbook
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: notice-icon-only
+  syncPolicy:
+    automated: {prune: true, selfHeal: true}
+    syncOptions: [CreateNamespace=true]
