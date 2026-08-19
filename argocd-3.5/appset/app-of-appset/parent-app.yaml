@@ -1,0 +1,17 @@
+# BEAT 6 - the parent. Apply this directly; it manages the ApplicationSet in Git.
+# Note: NO automated sync policy, so it stays OutOfSync after you edit the child
+# ApplicationSet in Git - which is exactly the state the preview panel needs.
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: parent-of-appset
+  namespace: argocd
+spec:
+  project: platform
+  source:
+    repoURL: REPO_URL
+    targetRevision: HEAD
+    path: DEMO_PATH/app-of-appset/appset
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: argocd
