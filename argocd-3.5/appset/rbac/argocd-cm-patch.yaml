@@ -1,9 +1,0 @@
-# Adds a local account used to demonstrate Preview's permission requirement.
-# Apply with:  kubectl patch cm argocd-cm -n argocd --patch-file rbac/argocd-cm-patch.yaml
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: argocd-cm
-  namespace: argocd
-data:
-  accounts.viewer: apiKey,login

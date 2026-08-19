@@ -1,14 +1,8 @@
-# BEAT 3b - health derivation + conditions modal.
-# The repo does not exist, so the generator fails, the controller raises an
-# ErrorOccurred condition, and status.health becomes Degraded.
 apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
 metadata:
-  name: broken-generator
+  name: broken
   namespace: argocd
-  labels:
-    demo: appset-ui
-    owner: platform
 spec:
   goTemplate: true
   generators:
@@ -21,7 +15,7 @@ spec:
     metadata:
       name: 'broken-{{.path.basename}}'
     spec:
-      project: platform
+      project: default
       source:
         repoURL: https://github.com/this-org-does-not-exist/nope.git
         targetRevision: HEAD
